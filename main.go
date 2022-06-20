@@ -16,7 +16,13 @@ func main() {
 
 	err = svc.Deposit(account.ID, 10)
 	if err != nil {
-		fmt.Println(err)
+		switch err {
+		case wallet.ErrAmountMustBePositive:
+			fmt.Println(" Сумма должна быть положительной")
+		case wallet.ErrAccountNotFount:
+			fmt.Println(" Aккаунт пользователя не найден")
+		}
 		return
 	}
+	fmt.Println(account.Balance)
 }

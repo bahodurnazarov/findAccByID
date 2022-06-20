@@ -2,18 +2,19 @@ package wallet
 
 import (
 	"errors"
-
+	"github.com/google/uuid"
 	"github.com/bahodurnazarov/findAccByID/pkg/types"
 )
 
 var ErrPhoneRegister = errors.New("Phone already registred")
 var ErrAmountMustBePositive = errors.New("amount must be greater than zero")
 var ErrAccountNotFount = errors.New("account not found")
+var ErrNotEnoughBalance = errors.New("Not Enought Balance")
 
 type Service struct {
 	nextAccountID int64
 	accounts      []*types.Account
-	payment       []*types.Payment
+	payments       []*types.Payment
 }
 
 type Messenger interface {
@@ -85,4 +86,37 @@ func (s *Service) Deposit(accountID int64, amount types.Money) error {
 
 	account.Balance += amount
 	return nil
+}
+
+func (s *Service) Pay(accountID int64, amount types.Money, category types.PaymentCategory) (*types.Payment, error) {
+	if amount <= 0 {
+		return nil, ErrAmountMustBePositive
+	}
+
+	var account *types.Account
+	for _, acc := range s.accounts {
+		if acc.ID == accountID {
+			account = acc
+			break
+		}
+	}
+	if account == nil {
+		return nil, ErrAccountNotFount
+	}
+
+	if account.Balance < amount {
+		return nil, ErrNotEnoughBalance
+	}
+
+	account.Balance -= amount
+	paymentID := uuid.New().String()
+	payment := &types.Payment{
+		ID:        paymentID,
+		AccountID: accountID,
+		Amount:    amount,
+		Category:  category,
+		Status:    types.PaymentStatusInProgress,
+	}
+	s.payments = append(s.payments, payment)
+	return payment, nil
 }
