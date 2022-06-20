@@ -8,10 +8,10 @@ import (
 	"github.com/google/uuid"
 )
 
-var ErrPhoneRegister = errors.New("Phone already registred")
+var ErrPhoneRegister = errors.New("phone already registred")
 var ErrAmountMustBePositive = errors.New("amount must be greater than zero")
 var ErrAccountNotFount = errors.New("account not found")
-var ErrNotEnoughBalance = errors.New("Not Enought Balance")
+var ErrNotEnoughBalance = errors.New("not Enought Balance")
 
 type Service struct {
 	nextAccountID int64
@@ -165,18 +165,18 @@ func newTestService() *testService {
 	return &testService{Service: &Service{}}
 }
 
-func (s *testService) addAccountWithBalance(phone types.Phone, balance types.Money) (*types.Account, error) {
-	account, err := s.RegisterAccount(phone)
-	if err != nil {
-		return nil, fmt.Errorf("can't register account, error = %v", err)
-	}
+// func (s *testService) addAccountWithBalance(phone types.Phone, balance types.Money) (*types.Account, error) {
+// 	account, err := s.RegisterAccount(phone)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("can't register account, error = %v", err)
+// 	}
 
-	err = s.Deposit(account.ID, balance)
-	if err != nil {
-		return nil, fmt.Errorf("can't deposit, error = %v", err)
-	}
-	return account, nil
-}
+// 	err = s.Deposit(account.ID, balance)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("can't deposit, error = %v", err)
+// 	}
+// 	return account, nil
+// }
 
 type testAccount struct {
 	phone types.Phone
